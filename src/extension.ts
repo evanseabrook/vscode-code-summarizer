@@ -69,6 +69,10 @@ export function activate(context: vscode.ExtensionContext) {
 	const project = configuration['GCPProject'];
 	const location = configuration['GCPRegion'];
 
+	if (project.length == 0 || location.length == 0) {
+		vscode.window.showErrorMessage("Please set GCP Project and GCP Region in Code Summarizer settings before use. Restart VSCode after to fix.");
+	}
+
 	let predictionService = new PredictionServiceClient({
 		apiEndpoint: `${location}-aiplatform.googleapis.com`
 	});

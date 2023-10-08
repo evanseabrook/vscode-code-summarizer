@@ -34,3 +34,7 @@ To install the extension locally, please:
 2. Navigate to the Extensions view in vscode
 3. Click on the 3 dotes on the top right of the Extensions view
 4. Click `Install from VSIX` and navigate to the `.vsix` file created during the build
+5. Configure Code Summarizer's Extension settings  
+    i. Open VSCode's settings  
+    ii. Navigate to Extensions  
+    iii. Find Code Summarizer and fill in details for your Google Cloud project (view the Requirements section above for more details)
