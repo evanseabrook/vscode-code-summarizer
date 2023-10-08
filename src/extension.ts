@@ -8,6 +8,13 @@ const DEFAULT_MAX_TOKENS = 2048;
 const DEFAULT_TOPP = 0.95;
 const DEFAULT_TOPK = 40;
 
+/**
+ * Returns the selected text found in the provided editor. If the editor is undefined
+ * or nothing is currently selected/highlighted in the editor, an Error is thrown.
+ * 
+ * @param editor 
+ * @returns The text currently selected in the editor.
+ */
 function getSelectedText(editor: vscode.TextEditor | undefined): string | undefined {
 	const selection = editor?.selection;
 
@@ -24,6 +31,16 @@ function getSelectedText(editor: vscode.TextEditor | undefined): string | undefi
 	throw new Error('No text currently highlighted!');
 }
 
+/**
+ * Creates a Generative AI request against Vertex AI's chat-bison LLM.
+ * 
+ * @param predictionService An instance of @google-cloud/aiplatform/PredictionServiceClient
+ * @param project The GCP project you're using for billing purposes
+ * @param location The GCP region you're targetting for inference
+ * @param context The system prompt / context to provide to the LLM
+ * @param query The query / user prompt to provide to the LLM
+ * @returns A promise from the prediction service to be fulfilled once the request is complete
+ */
 async function makePrediction(
 	predictionService: PredictionServiceClient,
 	project: string, 
@@ -59,7 +76,12 @@ async function makePrediction(
 
 		return predictionService.predict(request);
 	}
-
+/**
+ * Runs when the extension is to be activated. Checkout package.json to see which
+ * events this function is subscribed to.
+ * 
+ * @param context The context passed in by VSCode on activation
+ */
 export function activate(context: vscode.ExtensionContext) {
 
 	let configuration = vscode.workspace.getConfiguration("code-summarizer");
@@ -76,8 +98,10 @@ export function activate(context: vscode.ExtensionContext) {
 		apiEndpoint: `${location}-aiplatform.googleapis.com`
 	});
 
-	// register a content provider for the cowsay-scheme
+	// register a content provider for the codesummarize-scheme
 	const myScheme = 'codesummarize';
+	
+	// Create a new TextDocumentContentProvider to open a virtual document that summaries / recommendations appear in
 	const myProvider = new class implements vscode.TextDocumentContentProvider {
 
 		// emitter and its event
@@ -90,6 +114,7 @@ export function activate(context: vscode.ExtensionContext) {
 	};
 	context.subscriptions.push(vscode.workspace.registerTextDocumentContentProvider(myScheme, myProvider));
 
+	// Registers the code sumamrization command
 	let summarizeCommand = vscode.commands.registerCommand('code-summarizer.summarizeCode', () => {
 		try {
 			const editor = vscode.window.activeTextEditor;
@@ -128,6 +153,7 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	});
 
+	// Registers the code recommendation command
 	let makeCodeRecommendations = vscode.commands.registerCommand('code-summarizer.makeCodeRecommendations', () => {
 		try {
 			const editor = vscode.window.activeTextEditor;
@@ -165,12 +191,14 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	});
 
+	// Adds both code registries above to the VSCode command pallet
 	context.subscriptions.push(summarizeCommand);
 	context.subscriptions.push(makeCodeRecommendations);
 }
 
 export function deactivate() {}
 
+// Makes internal functions available for testing
 export const exportedForTesting = {
 	getSelectedText,
 	makePrediction
