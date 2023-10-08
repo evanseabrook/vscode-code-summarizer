@@ -1,6 +1,7 @@
 {
   "name": "code-summarizer",
   "displayName": "Code Summarizer",
+  "publisher": "evanseabrook",
   "description": "Summarizes code... keep up.",
   "version": "0.0.1",
   "repository": {
@@ -13,7 +14,7 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": ["*"],
   "main": "./out/extension.js",
   "contributes": {
     "configuration": {
@@ -28,7 +29,6 @@
           "type": "string",
           "default": "",
           "description": "Specified the GCP project you wish to use that has Vertex AI enabled."
-
         }
       }
     },
@@ -53,16 +53,19 @@
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js"
   },
+  "dependencies": {
+    "@google-cloud/aiplatform": "^3.2.0"
+  },
   "devDependencies": {
-    "@types/vscode": "^1.83.0",
     "@types/mocha": "^10.0.2",
     "@types/node": "18.x",
+    "@types/vscode": "^1.83.0",
     "@typescript-eslint/eslint-plugin": "^6.7.3",
     "@typescript-eslint/parser": "^6.7.3",
+    "@vscode/test-electron": "^2.3.4",
     "eslint": "^8.50.0",
     "glob": "^10.3.3",
     "mocha": "^10.2.0",
-    "typescript": "^5.2.2",
-    "@vscode/test-electron": "^2.3.4"
+    "typescript": "^5.2.2"
   }
 }

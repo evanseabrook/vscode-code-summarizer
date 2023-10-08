@@ -10,7 +10,6 @@ const DEFAULT_TOPK = 40;
 
 function getSelectedText(editor: vscode.TextEditor | undefined): string | undefined {
 	const selection = editor?.selection;
-	protos.google.cloud.aiplatform.v1.PredictResponse
 
 	if (selection && !selection.isEmpty) {
 		const selectionRange = new vscode.Range(
@@ -49,28 +48,28 @@ async function makePrediction(
 			topK: DEFAULT_TOPK
 		};
 
-		const parameters = helpers.toValue(requestParams)
+		const parameters = helpers.toValue(requestParams);
 		const instanceValue = helpers.toValue(prompt);
 		const instances = [instanceValue!];
 		const request = {
 			endpoint,
 			instances,
 			parameters: parameters
-		}
-		
-		return predictionService.predict(request)
+		};
+
+		return predictionService.predict(request);
 	}
 
 export function activate(context: vscode.ExtensionContext) {
 
 	let configuration = vscode.workspace.getConfiguration("code-summarizer");
-	const editor = vscode.window.activeTextEditor;
+	
 
 	const project = configuration['GCPProject'];
 	const location = configuration['GCPRegion'];
 
-	if (project.length == 0 || location.length == 0) {
-		vscode.window.showErrorMessage("Please set GCP Project and GCP Region in Code Summarizer settings before use. Restart VSCode after to fix.");
+	if (project.length === 0 || location.length === 0) {
+		vscode.window.showErrorMessage("Please set GCP Project and GCP Region in Code Summarizer settings before use.");
 	}
 
 	let predictionService = new PredictionServiceClient({
@@ -93,6 +92,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	let summarizeCommand = vscode.commands.registerCommand('code-summarizer.summarizeCode', () => {
 		try {
+			const editor = vscode.window.activeTextEditor;
 			const selectedText = getSelectedText(editor);
 
 			const predictionContext = 'You are a senior developer that\'s good at summarizing complex code into simple terms.';
@@ -108,7 +108,7 @@ export function activate(context: vscode.ExtensionContext) {
 					fields?.candidates?.listValue?.values?.[0]?.structValue?.
 					fields?.['content']?.stringValue);
 
-				if (summary == null) {
+				if (summary === null) {
 					summary = "No summary available.";
 				}
 
@@ -128,6 +128,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	let makeCodeRecommendations = vscode.commands.registerCommand('code-summarizer.makeCodeRecommendations', () => {
 		try {
+			const editor = vscode.window.activeTextEditor;
 			const selectedText = getSelectedText(editor);
 
 			const predictionContext = 'You are a senior developer that\'s good at providing concise, constructive feedback on how code is written.';
@@ -143,7 +144,7 @@ export function activate(context: vscode.ExtensionContext) {
 						fields?.candidates?.listValue?.values?.[0]?.structValue?.
 						fields?.['content']?.stringValue);
 	
-					if (summary == null) {
+					if (summary === null) {
 						summary = "No summary available.";
 					}
 					const uri = vscode.Uri.parse(`${myScheme}:Recommendations:\n${summary!.trim()}`);

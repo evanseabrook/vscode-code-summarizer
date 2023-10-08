@@ -3,8 +3,6 @@ Author: Evan Seabrook
 
 This is a simple VSCode extension that allows you to summarize code you've selected in your editor window using generative AI.
 
-
-
 ## Motiviation
 This extension was built as a personal project to:
 1. Learn the VSCode Extension ecosystem/API
