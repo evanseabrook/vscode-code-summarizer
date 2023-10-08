@@ -22,6 +22,15 @@ Once `gcloud` is installed, you will need to create a project and set your Appli
 gcloud auth login -update-adc
 ```
 
+## Usage
+1. Install the `gcloud CLI`, create a GCP project, and set your Application Default Credentials, as covered in the Authentication section above
+2. Upon installing this extension, please navigate to the Extension Settings in VS Code and provide your GCP project and region.
+3. Highlight code that you wish to work with, open the command pallet, and run one of the provided commands:
+    
+    **Summarize highlighted code**: Takes the code actively selected in your editor and asks Google’s chat-bison to summarize the code in simple terms, as if it was a senior developer
+    
+    **Make recommendations for highlighted code**: Takes the code actively selected in your editor and asks Google’s chat-bison to provide recommendations to improve the code, again through the eyes/context of a senior developer.
+
 ## Tests
 To run the extension's tests, use the following command:
 

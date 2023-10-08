@@ -2,8 +2,8 @@
   "name": "code-summarizer",
   "displayName": "Code Summarizer",
   "publisher": "evanseabrook",
-  "description": "Summarizes code... keep up.",
-  "version": "0.0.1",
+  "description": "Allows you to use Generative AI to summarize and make recommendations for highlighted code.",
+  "version": "0.1.0",
   "repository": {
     "type": "git",
     "url": "git://github.com:evanseabrook/vscode-code-summarizer.git"
