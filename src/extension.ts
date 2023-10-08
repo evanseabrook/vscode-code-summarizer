@@ -73,6 +73,20 @@ export function activate(context: vscode.ExtensionContext) {
 		apiEndpoint: `${location}-aiplatform.googleapis.com`
 	});
 
+	// register a content provider for the cowsay-scheme
+	const myScheme = 'codesummarize';
+	const myProvider = new class implements vscode.TextDocumentContentProvider {
+
+		// emitter and its event
+		onDidChangeEmitter = new vscode.EventEmitter<vscode.Uri>();
+		onDidChange = this.onDidChangeEmitter.event;
+
+		provideTextDocumentContent(uri: vscode.Uri): string {
+			return uri.path;
+		}
+	};
+	context.subscriptions.push(vscode.workspace.registerTextDocumentContentProvider(myScheme, myProvider));
+
 	let summarizeCommand = vscode.commands.registerCommand('code-summarizer.summarizeCode', () => {
 		try {
 			const selectedText = getSelectedText(editor);
@@ -85,7 +99,7 @@ export function activate(context: vscode.ExtensionContext) {
 				project,
 				location,
 				predictionContext,
-				prompt).then((value) => {
+				prompt).then(async (value) => {
 				let summary = (value?.[0]?.predictions?.[0]?.structValue?.
 					fields?.candidates?.listValue?.values?.[0]?.structValue?.
 					fields?.['content']?.stringValue);
@@ -93,7 +107,10 @@ export function activate(context: vscode.ExtensionContext) {
 				if (summary == null) {
 					summary = "No summary available.";
 				}
-				vscode.window.showInformationMessage(summary!);
+
+				const uri = vscode.Uri.parse(`${myScheme}:Summary:\n${summary!.trim()}`);
+				const doc = await vscode.workspace.openTextDocument(uri);
+				await vscode.window.showTextDocument(doc, { preview: false });
 			}).catch((reason) => {
 				vscode.window.showErrorMessage(reason.message);
 			});
@@ -110,14 +127,14 @@ export function activate(context: vscode.ExtensionContext) {
 			const selectedText = getSelectedText(editor);
 
 			const predictionContext = 'You are a senior developer that\'s good at providing concise, constructive feedback on how code is written.';
-			const prompt = `Please suggest ways to improve my code, if possible. If my solution is optimal, tell me I did a great job. If providing examples, keep them short. Here is the code: ${selectedText}`;
+			const prompt = `Please suggest ways to improve my code, if possible. If my solution is optimal, tell me I did a great job. Here is the code: ${selectedText}`;
 
 			makePrediction(
 				predictionService,
 				project,
 				location,
 				predictionContext,
-				prompt).then((value) => {
+				prompt).then(async (value) => {
 					let summary = (value?.[0]?.predictions?.[0]?.structValue?.
 						fields?.candidates?.listValue?.values?.[0]?.structValue?.
 						fields?.['content']?.stringValue);
@@ -125,7 +142,9 @@ export function activate(context: vscode.ExtensionContext) {
 					if (summary == null) {
 						summary = "No summary available.";
 					}
-					vscode.window.showInformationMessage(summary!);
+					const uri = vscode.Uri.parse(`${myScheme}:Recommendations:\n${summary!.trim()}`);
+					const doc = await vscode.workspace.openTextDocument(uri);
+					await vscode.window.showTextDocument(doc, { preview: false });
 				}).catch((reason) => {
 					vscode.window.showErrorMessage(reason.message);
 				});
