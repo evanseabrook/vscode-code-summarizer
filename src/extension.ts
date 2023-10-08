@@ -4,7 +4,7 @@ import * as protos from '@google-cloud/aiplatform/build/protos/protos';
 
 // Vertex AI LLM default parameter values
 const DEFAULT_TEMPERATURE = 0.2;
-const DEFAULT_MAX_TOKENS = 256;
+const DEFAULT_MAX_TOKENS = 2048;
 const DEFAULT_TOPP = 0.95;
 const DEFAULT_TOPK = 40;
 
@@ -95,6 +95,8 @@ export function activate(context: vscode.ExtensionContext) {
 			const editor = vscode.window.activeTextEditor;
 			const selectedText = getSelectedText(editor);
 
+			vscode.window.showInformationMessage("A summary will appear in another view shortly");
+
 			const predictionContext = 'You are a senior developer that\'s good at summarizing complex code into simple terms.';
 			const prompt = `Please explain what this code does: ${selectedText}`;
 
@@ -108,7 +110,7 @@ export function activate(context: vscode.ExtensionContext) {
 					fields?.candidates?.listValue?.values?.[0]?.structValue?.
 					fields?.['content']?.stringValue);
 
-				if (summary === null) {
+				if (summary === null || summary?.trim() === "") {
 					summary = "No summary available.";
 				}
 
@@ -131,6 +133,8 @@ export function activate(context: vscode.ExtensionContext) {
 			const editor = vscode.window.activeTextEditor;
 			const selectedText = getSelectedText(editor);
 
+			vscode.window.showInformationMessage("Recommendations will appear in another view shortly");
+
 			const predictionContext = 'You are a senior developer that\'s good at providing concise, constructive feedback on how code is written.';
 			const prompt = `Please suggest ways to improve my code, if possible. If my solution is optimal, tell me I did a great job. Here is the code: ${selectedText}`;
 
@@ -144,8 +148,8 @@ export function activate(context: vscode.ExtensionContext) {
 						fields?.candidates?.listValue?.values?.[0]?.structValue?.
 						fields?.['content']?.stringValue);
 	
-					if (summary === null) {
-						summary = "No summary available.";
+					if (summary === null || summary?.trim() === "") {
+						summary = "No recommendations available.";
 					}
 					const uri = vscode.Uri.parse(`${myScheme}:Recommendations:\n${summary!.trim()}`);
 					const doc = await vscode.workspace.openTextDocument(uri);
@@ -166,3 +170,8 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 export function deactivate() {}
+
+export const exportedForTesting = {
+	getSelectedText,
+	makePrediction
+};
